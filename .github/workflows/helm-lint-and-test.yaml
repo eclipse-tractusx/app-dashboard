@@ -38,5 +38,5 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
 
       - name: Run chart-testing (install)
-        run: ct install --charts charts/k8s-helm-example --config charts/chart-testing-config.yaml
+        run: ct install --charts charts
         if: steps.list-changed.outputs.changed == 'true'
