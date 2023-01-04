@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Version Dashboard</title>
+
+    <!-- links -->
+    <link rel="icon" type="image/x-icon" href="/img/logo_tractus-x.svg">
+    <link rel="stylesheet" href="/css/main.css?version={{ .AppVersion }}" />
+
+    <link href="/css/simple-datatables.css" rel="stylesheet" type="text/css">
+    <script src="/js/simple-datatables.js" type="text/javascript"></script>
+
+    <script src="/js/main.js" type="text/javascript" defer></script>
+
+
+    <!-- our project just needs Font Awesome Solid + Brands -->
+    <link href="/css/fontawesome/fontawesome.css" rel="stylesheet">
+    <link href="/css/fontawesome/brands.css" rel="stylesheet">
+    <link href="/css/fontawesome/solid.css" rel="stylesheet">
+</head>
+<body>
+
+<div id="header">
+
+    <div style="float:left;margin: auto;font-size:14px;height:100%">
+        <div style="height: 100%;vertical-align: middle;text-align: center"><img height="28px" style="vertical-align:middle;margin-top:11px;margin-left:5px;margin-right:5px;" src="/img/logo_tractus-x.svg"/></div>
+        <span>Eclipse Tractus-X</span>
+    </div>
+
+    <div style="float:right;margin: auto; height: 100%; vertical-align:center;font-size:14px">
+        <a id="github" href="https://github.com/eclipse-tractusx/eclipse-tractusx.github.io" target="_blank" rel="noopener noreferrer">
+        GitHub
+            <svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path>
+            </svg>
+        </a>
+    </div>
+</div>
+
+<h1 id="head">Dashboard - Installed ArgoCD Applications</h1>
+<h2 id="subhead">Environment: {{ .Environment }} - (Last synced: {{ lastSync .LastSync }})</h2>
+
+<div id="allmain">
+    <details>
+    <summary>Help? / How to use!</summary>
+        <div style="padding-left:10px; margin-top:5px;margin-bottom: 20px; border: thin solid grey;border-radius: 10px;box-shadow: 0 0 20px rgba(88, 88, 88, 0.15);">
+            <p>Columns:
+                <ul>
+                    <li>Product name: Shows the name of the argocd application</li>
+                    <li>Namespace: Shows the destination namespace</li>
+                    <li>Images: Shows all used images and shows a hint if any :latest image is found.</li>
+                    <li>Postgresql: Shows found Postgresql image version; This gives a hint on what Postgresql version is pulled in.</li>
+                 </ul>
+            </p>
+            <p>Verbose data:
+                <ul>
+                    <li>GitVersion / K8s cluster: {{ .GitVersion }}</li>
+                    <li>Ignored Namespaces: {{ ignoreNamespace .IgnoreNamespace }}</li>
+                </ul>
+            </p>
+        </div>
+    </details>
+
+    <table id="main">
+        <thead>
+        <tr class="main-header">
+            <th id="main-name" class="main-header">
+                Product name
+            </th>
+            <th id="main-namespace" class="main-header">
+                Namespace
+            </th>
+            <th id="main-images" class="main-header">
+                Images
+            </th>
+            <th id="main-postgres" class="main-header">
+                Postgresql
+            </th>
+            <th id="main-exturls" class="main-header">
+                External Urls
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+    {{ range .Res.Items }}
+    {{ if .IgnoreNamespace}}{{continue}}{{end}}
+        <tr class="main">
+            <td class="main main-name">
+                <a href="{{ .Spec.Source.RepoUrl }}/tree/{{ .Spec.Source.TargetRevision}}" target="_blank">{{ .Metadata.Name }}</a> ({{ argoHealth .Status.Health.Status }} / {{ argoSync .Status.Sync.Status }}) - Path: {{ .Spec.Source.Path }}</i>
+            </td>
+            <td class="main main-namespace">
+                {{ .Spec.Destination.Namespace }}
+            </td>
+            <td class="main main-image">
+                <details>
+                    <summary>Images ({{ if .Status.Summary.LatestImage}}<span class="latest">:latest image found!</span>{{else if not .Status.Summary.LatestImage}}<span class="nolatest">No :latest image found</span>{{end}})</summary>
+                    <ul>
+                    {{ range .Status.Summary.Images }}
+                        <li>{{ image .}}</li>
+                    {{ end }}
+                    </ul>
+                </details>
+            </td>
+            <td class="main main-postgres">
+                {{ .Status.Summary.PostgresqlImage }}
+            </td>
+            <td class="main main-image">
+                <details>
+                    <summary>Ext Urls ({{ len .Status.Summary.ExternalUrls }})</summary>
+                    <ul>
+                        {{ range .Status.Summary.ExternalUrls }}
+                        <li><a href="{{.}}" target="_blank">{{.}}</a></li>
+                        {{ end }}
+                    </ul>
+                </details>
+            </td>
+        </tr>
+    {{end}}
+        </tbody>
+    </table>
+    </div>
+
+<div id="footer">Copyright © 2023 <a href="https://projects.eclipse.org/projects/automotive.tractusx" target="_blank">Eclipse Tractus-X</a>.</div>
+
+</body>
+</html>
