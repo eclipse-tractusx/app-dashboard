@@ -11,6 +11,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Build image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: false
+          tags: testing
+
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
