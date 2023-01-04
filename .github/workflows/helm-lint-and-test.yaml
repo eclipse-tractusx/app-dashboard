@@ -11,11 +11,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Kubernetes KinD Cluster
+        uses: container-tools/kind-action@v1
+
       - name: Build image
         uses: docker/build-push-action@v3
         with:
           context: .
-          push: false
+          push: true
           tags: testing
 
       - name: Set up Helm
@@ -40,10 +43,6 @@ jobs:
           fi
       - name: Run chart-testing (lint)
         run: ct lint --validate-maintainers=false --target-branch ${{ github.event.repository.default_branch }}
-
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.4.0
-        if: steps.list-changed.outputs.changed == 'true'
 
       - name: Run chart-testing (install)
         run: ct install --charts charts/app-dashboard
