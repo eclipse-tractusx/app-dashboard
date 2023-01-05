@@ -17,7 +17,8 @@ spec:
         - {{ .Values.simpleHost }}
   rules:
   - host: {{ .Values.simpleHost }}
-    paths:
+    http:
+      paths:
       - path: /
         pathType: ImplementationSpecific
         backend:
