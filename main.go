@@ -143,11 +143,15 @@ func requestAndTransformApplications(clientset *kubernetes.Clientset, ignoreName
 
 	d, err := clientset.RESTClient().Get().AbsPath("/apis/argoproj.io/v1alpha1/applications").DoRaw(context.TODO())
 	if err != nil {
-		if statusError, ok := err.(*errors.StatusError); ok && statusError.Status().Code == 404 {
-			println("No app found")
+		if statusError, ok := err.(*errors.StatusError); ok {
+			if statusError.Status().Code == 404 {
+				println("No applications found.")
+			} else {
+				fmt.Printf("Got an error from the k8s api: %v", string(d))
+				panic(statusError)
+			}
 		} else {
-			fmt.Println(err.Error())
-			fmt.Println(d)
+			fmt.Printf("Got an error from the k8s api: %v", string(d))
 			panic(err)
 		}
 	} else {
