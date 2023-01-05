@@ -146,6 +146,7 @@ func requestAndTransformApplications(clientset *kubernetes.Clientset, ignoreName
 		if statusError, ok := err.(*errors.StatusError); ok && statusError.Status().Code == 404 {
 			println("No app found")
 		} else {
+			fmt.Println(err)
 			panic(err)
 		}
 	} else {
