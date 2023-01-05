@@ -11,18 +11,17 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  tls:
+    - secretName: tls-secret
+      hosts:
+        - {{ .Values.simpleHost }}
   rules:
-    hosts:
-      - host: {{ .Values.simpleHost }}
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: {{ $fullName }}
-                port:
-                  number: {{ $svcPort }}
-    tls:
-      - secretName: tls-secret
-        hosts:
-          - {{ .Values.simpleHost }}
+  - host: {{ .Values.simpleHost }}
+    paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ $fullName }}
+            port:
+              number: {{ $svcPort }}
