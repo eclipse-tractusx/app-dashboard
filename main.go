@@ -147,6 +147,7 @@ func requestAndTransformApplications(clientset *kubernetes.Clientset, ignoreName
 			println("No app found")
 		} else {
 			fmt.Println(err)
+			fmt.Println(d)
 			panic(err)
 		}
 	} else {
