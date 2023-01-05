@@ -1,0 +1,3 @@
+image:
+  repository: kind-registry:5000/app-dashboard
+  tag: "testing"

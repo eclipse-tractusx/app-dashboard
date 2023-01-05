@@ -13,6 +13,8 @@ RUN CGO_ENABLED=0 go test ./... && \
 
 FROM gcr.io/distroless/static:nonroot AS final
 
+WORKDIR /app
+
 COPY ./web /app/web
 COPY --from=builder --chown=nonroot:nonroot /app/dashboard /app/dashboard
 

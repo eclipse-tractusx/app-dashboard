@@ -97,6 +97,12 @@ const k8sRefreshTimeInSeconds = 300 // 5 Minutes
 func main() {
 	cluster, envName, ignoreNamespace := initializeAppFlags()
 
+	var err error
+	errorPage, err = os.ReadFile("web/error.html")
+	if err != nil {
+		panic(err)
+	}
+
 	clientSet := GetClientSet(*cluster)
 
 	version, err := clientSet.DiscoveryClient.ServerVersion()
@@ -112,11 +118,6 @@ func main() {
 		Environment:     envName,
 		GitVersion:      version.GitVersion,
 		AppVersion:      1,
-	}
-
-	errorPage, err = os.ReadFile("web/error.html")
-	if err != nil {
-		panic(err)
 	}
 
 	go startWebserver(&values)
@@ -145,6 +146,7 @@ func requestAndTransformApplications(clientset *kubernetes.Clientset, ignoreName
 		if statusError, ok := err.(*errors.StatusError); ok && statusError.Status().Code == 404 {
 			println("No app found")
 		} else {
+			fmt.Println(err)
 			panic(err)
 		}
 	} else {
