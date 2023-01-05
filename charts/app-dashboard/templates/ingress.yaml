@@ -19,9 +19,9 @@ spec:
             pathType: ImplementationSpecific
             backend:
               service:
-                name: { { $fullName } }
+                name: {{ $fullName }}
                 port:
-                  number: { { $svcPort } }
+                  number: {{ $svcPort }}
     tls:
       - secretName: tls-secret
         hosts:
