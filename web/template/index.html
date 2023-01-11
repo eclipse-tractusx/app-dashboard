@@ -88,7 +88,7 @@
     {{ if .IgnoreNamespace}}{{continue}}{{end}}
         <tr class="main">
             <td class="main main-name">
-                <a href="{{ removeDotGitIfExists .Spec.Source.RepoUrl }}/tree/{{ .Spec.Source.TargetRevision}}" target="_blank">{{ .Metadata.Name }}</a> ({{ argoHealth .Status.Health.Status }} / {{ argoSync .Status.Sync.Status }}) - Path: {{ .Spec.Source.Path }}</i>
+                <a href="{{ fixGithubUrl .Spec.Source.RepoUrl }}/tree/{{ .Spec.Source.TargetRevision}}" target="_blank">{{ .Metadata.Name }}</a> ({{ argoHealth .Status.Health.Status }} / {{ argoSync .Status.Sync.Status }}) - Path: {{ .Spec.Source.Path }}</i>
             </td>
             <td class="main main-namespace">
                 {{ .Spec.Destination.Namespace }}
