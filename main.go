@@ -311,6 +311,9 @@ func startWebserver(values *templateValues) {
 			return path + "<span class=\"image\">" + image + "</span>:<span class=\"tag\">" + tag + "</span>"
 
 		},
+		"removeDotGitIfExists": func(url string) string {
+			return strings.TrimSuffix(url, ".git")
+		},
 	}).ParseFiles("./web/template/index.html"))
 
 	http.Handle("/css/", maxAgeHandler(86400, http.StripPrefix("/css/",
