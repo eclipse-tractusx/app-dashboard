@@ -250,6 +250,9 @@ func startWebserver(values *templateValues) {
 				return "<i title=\"Error\" class=\"fa fa-question-circle\" style=\"color: rgb(233, 109, 118);\"></i>"
 			}
 		},
+		"fixGithubUrl": func(url string) string {
+			return strings.TrimSuffix(strings.ReplaceAll(url, "git@github.com:", "https://github.com/"), ".git")
+		},
 		"lastSync": func(lastUpdate time.Time) string {
 
 			duration := time.Now().Sub(lastUpdate).Round(time.Second)
@@ -310,9 +313,6 @@ func startWebserver(values *templateValues) {
 
 			return path + "<span class=\"image\">" + image + "</span>:<span class=\"tag\">" + tag + "</span>"
 
-		},
-		"removeDotGitIfExists": func(url string) string {
-			return strings.TrimSuffix(url, ".git")
 		},
 	}).ParseFiles("./web/template/index.html"))
 
