@@ -249,7 +249,7 @@ func startWebserver(values *templateValues) {
 				if duration.Hours() > 24 {
 					since = fmt.Sprintf("%v days", int(duration.Hours()/24))
 				} else {
-					since = string(duration)
+					since = fmt.Sprintf("%v", duration)
 				}
 
 				result += "<li>" + entry.DeployedAt + " (" + since + ")<br/>rev: " + entry.Revision + "</li>"
