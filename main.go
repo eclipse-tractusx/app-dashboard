@@ -1,3 +1,23 @@
+/********************************************************************************
+* Copyright (c) 2023 SAP SE
+* Copyright (c) 2023 Contributors to the Eclipse Foundation
+*
+* See the NOTICE file(s) distributed with this work for additional
+* information regarding copyright ownership.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Apache License, Version 2.0 which is available at
+* https://www.apache.org/licenses/LICENSE-2.0.
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+* License for the specific language governing permissions and limitations
+* under the License.
+*
+* SPDX-License-Identifier: Apache-2.0
+  ********************************************************************************/
+
 package main
 
 import (
@@ -13,72 +33,11 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"text/template"
 	"time"
 )
-
-type metadata struct {
-	Generation int
-	Name       string
-	Namespace  string
-}
-
-type summary struct {
-	ExternalUrls         []string
-	Images               []string
-	LatestImage          bool
-	PostgresqlImageFound bool
-	PostgresqlImage      string
-}
-
-type health struct {
-	Status string
-}
-
-type status struct {
-	Health  health
-	history []string
-	Summary summary
-	Sync    statusSync
-}
-
-type source struct {
-	RepoUrl        string
-	Path           string
-	TargetRevision string
-}
-
-type destination struct {
-	Namespace string
-	Server    string
-}
-
-type spec struct {
-	Destination destination
-	Project     string
-	Source      source
-}
-
-type statusSync struct {
-	Source source
-	Status string
-}
-
-type item struct {
-	ApiVersion      string
-	Kind            string
-	Metadata        metadata
-	Spec            spec
-	Status          status
-	IgnoreNamespace bool
-}
-
-type Applications struct {
-	ApiVersion string
-	Items      []item
-	Kind       string
-}
 
 type templateValues struct {
 	Res             Applications
@@ -252,6 +211,51 @@ func startWebserver(values *templateValues) {
 		},
 		"fixGithubUrl": func(url string) string {
 			return strings.TrimSuffix(strings.ReplaceAll(url, "git@github.com:", "https://github.com/"), ".git")
+		},
+		"lastAppSyncShort": func(history []history) string {
+			sort.Slice(history, func(i, j int) bool {
+				return history[i].Id > history[j].Id
+			})
+
+			if len(history) < 1 {
+				return "none"
+			}
+
+			t, _ := time.Parse("2006-01-02T15:04:05Z07:00", history[0].DeployedAt)
+			duration := time.Now().Sub(t).Round(time.Minute)
+
+			if duration.Hours() > 24 {
+				return fmt.Sprintf("%v days", int(duration.Hours()/24))
+			}
+
+			return fmt.Sprint(duration)
+		},
+		"lastAppSyncLong": func(history []history) string {
+			sort.Slice(history, func(i, j int) bool {
+				return history[i].Id > history[j].Id
+			})
+
+			if len(history) < 1 {
+				return "none"
+			}
+
+			var result string
+			for _, entry := range history {
+
+				t, _ := time.Parse("2006-01-02T15:04:05Z07:00", entry.DeployedAt)
+				duration := time.Now().Sub(t).Round(time.Minute)
+
+				var since string
+				if duration.Hours() > 24 {
+					since = fmt.Sprintf("%v days", int(duration.Hours()/24))
+				} else {
+					since = string(duration)
+				}
+
+				result += "<li>" + entry.DeployedAt + " (" + since + ")<br/>rev: " + entry.Revision + "</li>"
+			}
+
+			return result
 		},
 		"lastSync": func(lastUpdate time.Time) string {
 
