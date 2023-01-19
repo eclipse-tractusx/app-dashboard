@@ -2,6 +2,19 @@ apiVersion: v1
 entries:
   app-dashboard:
   - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2023-01-19T13:27:51.712224338Z"
+    description: A Helm chart for Kubernetes
+    digest: 0059f5ecf6b3c48eeef36aa80c99a8fa5ba36c1ed2a87b551c2085afb4ce935a
+    maintainers:
+    - name: The System Team of Catena-X / Eclipse Tractus-X
+      url: https://projects.eclipse.org/projects/automotive.tractusx
+    name: app-dashboard
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/app-dashboard/releases/download/app-dashboard-1.0.0/app-dashboard-1.0.0.tgz
+    version: 1.0.0
+  - apiVersion: v2
     appVersion: 1.0.0-RC1
     created: "2023-01-05T17:36:37.751616929Z"
     description: A Helm chart for Kubernetes
@@ -53,4 +66,4 @@ entries:
     urls:
     - https://github.com/eclipse-tractusx/app-dashboard/releases/download/app-dashboard-1.0.0-RC4/app-dashboard-1.0.0-RC4.tgz
     version: 1.0.0-RC4
-generated: "2023-01-05T17:36:37.751633829Z"
+generated: "2023-01-19T13:27:51.712256138Z"
