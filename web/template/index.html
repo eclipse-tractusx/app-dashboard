@@ -48,10 +48,28 @@
         <div style="padding-left:10px; margin-top:5px;margin-bottom: 20px; border: thin solid grey;border-radius: 10px;box-shadow: 0 0 20px rgba(88, 88, 88, 0.15);">
             <p>Columns:
                 <ul>
-                    <li>Product name: Shows the name of the argocd application</li>
+                    <li>Product name: Shows the name of the argocd application; Mouse hover will show you the text description (
+                        <ul>
+                            <li>{{ argoHealth "Healthy" }}: Application is health</li>
+                            <li>{{ argoHealth "Progressing" }}: Application is currently being processed; ArgoCD might check if the Application is still in sync. This does not indicate an error or an issue, a refresh should be enough</li>
+                            <li>{{ argoHealth "Degraded" }}: Application is degraded / broken</li>
+                            <li>{{ argoHealth "Suspended" }}: Application is suspended on ArgoCD </li>
+                            <li>{{ argoHealth "Missing" }}: Application is missing in ArgoCD; Nothing deployed</li>
+                            <li>{{ argoHealth "Unknown" }}: Unknown error</li>
+                            <li>{{ argoHealth "Error" }}: Some error happened. This might ge an indication that the Application is broken</li>
+                        </ul>
+                        /
+                        <ul>
+                            <li>{{ argoSync "Synced" }}: The Application is in sync with the code from GitHub; No manual change through ArgoCD UI happened</li>
+                            <li>{{ argoSync "OutOfSync" }}: The Application is different from the code on GitHub; This indicates that someone changed a value in ArgoCD instead of in GitHub</li>
+                        </ul>)
+                    </li>
+
                     <li>Namespace: Shows the destination namespace</li>
-                    <li>Images: Shows all used images and shows a hint if any :latest image is found.</li>
-                    <li>Postgresql: Shows found Postgresql image version; This gives a hint on what Postgresql version is pulled in.</li>
+                    <li>Last Sync: Shows last sync happened and the revision</li>
+                    <li>Images: Shows all used images and shows a hint if any :latest image is found</li>
+                    <li>Postgresql: Shows found Postgresql image version; This gives a hint on what Postgresql version is pulled in</li>
+                    <li>External Urls: Shows all configured and publicly reachable URLs of the installed application</li>
                  </ul>
             </p>
             <p>Verbose data:
@@ -71,6 +89,9 @@
             </th>
             <th id="main-namespace" class="main-header">
                 Namespace
+            </th>
+            <th id="main-lastsync" class="main-header">
+                Last Sync
             </th>
             <th id="main-images" class="main-header">
                 Images
@@ -92,6 +113,14 @@
             </td>
             <td class="main main-namespace">
                 {{ .Spec.Destination.Namespace }}
+            </td>
+            <td class="main main-lastsync">
+                <details>
+                    <summary>Last sync ({{ lastAppSyncShort .Status.History }})</summary>
+                    <ul>
+                        {{ lastAppSyncLong .Status.History }}
+                    </ul>
+                </details>
             </td>
             <td class="main main-image">
                 <details>
