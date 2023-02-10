@@ -375,7 +375,7 @@ go/golang/golang.org%2Fx/sys/v0.0.0-20211216021012-1d35b9e2eb4e, Apache-2.0 AND 
 go/golang/golang.org%2Fx/sys/v0.0.0-20220209214540-3681064d5158, Apache-2.0 AND BSD-3-Clause AND BSD-3-Clause, approved, #3437
 go/golang/golang.org%2Fx/term/v0.0.0-20201126162022-7de9c90e9dd1, BSD-3-Clause, approved, #5720
 go/golang/golang.org%2Fx/term/v0.0.0-20210927222741-03fcf44c2211, BSD-3-Clause, approved, #5720
-go/golang/golang.org%2Fx/text/v0.0.0-20170915032832-14c0d48ead0c, BSD-3-Clause AND OTHER, restricted, clearlydefined
+go/golang/golang.org%2Fx/text/v0.0.0-20170915032832-14c0d48ead0c, BSD-3-Clause, approved, #6912
 go/golang/golang.org%2Fx/text/v0.3.0, BSD-3-Clause AND CC-BY-SA-1.0 AND CC-BY-SA-2.0 AND CC-BY-SA-2.5 AND CC-BY-SA-3.0, approved, #6122
 go/golang/golang.org%2Fx/text/v0.3.1-0.20180807135948-17ff2d5776d2, BSD-3-Clause AND CC-BY-SA-1.0 AND CC-BY-SA-2.0 AND CC-BY-SA-2.5 AND CC-BY-SA-3.0, approved, #6122
 go/golang/golang.org%2Fx/text/v0.3.2, BSD-3-Clause AND CC-BY-SA-1.0 AND CC-BY-SA-2.0 AND CC-BY-SA-2.5 AND CC-BY-SA-3.0, approved, #6120
@@ -546,7 +546,7 @@ go/golang/gopkg.in/check.v1/v1.0.0-20180628173108-788fd7840127, BSD-3-Clause AND
 go/golang/gopkg.in/check.v1/v1.0.0-20190902080502-41f04d3bba15, BSD-3-Clause AND BSD-2-Clause, approved, #6113
 go/golang/gopkg.in/check.v1/v1.0.0-20200227125254-8fa46927fb4f, BSD-3-Clause AND BSD-2-Clause, approved, #6113
 go/golang/gopkg.in/errgo.v2/v2.1.0, BSD-3-Clause, approved, #6072
-go/golang/gopkg.in/fsnotify.v1/v1.4.7, BSD-3-Clause, restricted, clearlydefined
+go/golang/gopkg.in/fsnotify.v1/v1.4.7, BSD-3-Clause, approved, #6913
 go/golang/gopkg.in/inf.v0/v0.9.1, BSD-3-Clause, approved, clearlydefined
 go/golang/gopkg.in/tomb.v1/v1.0.0-20141024135613-dd632973f1e7, BSD-3-Clause, approved, clearlydefined
 go/golang/gopkg.in/yaml.v2/v2.2.1, Apache-2.0 AND MIT, approved, #3642
