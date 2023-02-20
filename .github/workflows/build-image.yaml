@@ -57,6 +57,7 @@ jobs:
 
       # https://github.com/peter-evans/dockerhub-description
       - name: Update Docker Hub description
+        if: github.event_name != 'pull_request'
         uses: peter-evans/dockerhub-description@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
