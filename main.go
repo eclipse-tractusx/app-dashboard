@@ -136,7 +136,7 @@ func transformApplicationsResponse(applicationsResponse Applications, ignoreName
 		applicationsResponse.Items[i].Status.Summary.LatestImage = false
 		applicationsResponse.Items[i].Status.Summary.PostgresqlImageFound = false
 		for _, image := range item.Status.Summary.Images {
-			if strings.Contains(image, ":latest") {
+			if strings.Contains(image, ":latest") || strings.Contains(image, ":main") {
 				applicationsResponse.Items[i].Status.Summary.LatestImage = true
 			}
 
