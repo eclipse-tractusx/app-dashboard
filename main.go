@@ -178,18 +178,7 @@ func initializeAppFlags() (*bool, string, map[string]bool) {
 func startWebserver(values *templateValues) {
 	templates := template.Must(template.New("index.html").Funcs(template.FuncMap{
 		"argoHealth": argoHealthToHtmlFunc(),
-		"argoSync": func(status string) string {
-
-			// Took the code directly from argocd webui + chrome inspect; Due to use of fontawesome, this works
-			switch status {
-			case "Synced":
-				return "<i title=\"Synced\" class=\"fa fa-check-circle\" style=\"color: rgb(24, 190, 148);\"></i>"
-			case "OutOfSync":
-				return "<i title=\"OutOfSync\" class=\"fa fa-arrow-alt-circle-up\" style=\"color: rgb(244, 192, 48);\"></i>"
-			default:
-				return "<i title=\"Error\" class=\"fa fa-question-circle\" style=\"color: rgb(233, 109, 118);\"></i>"
-			}
-		},
+		"argoSync":   argoSyncStatusToHtmlFunc(),
 		"fixGithubUrl": func(url string) string {
 			return strings.TrimSuffix(strings.ReplaceAll(url, "git@github.com:", "https://github.com/"), ".git")
 		},

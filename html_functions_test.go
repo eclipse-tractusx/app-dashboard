@@ -26,86 +26,118 @@ const (
 )
 
 var (
-	argoHealthToHtml = argoHealthToHtmlFunc()
-	statusToRender   = ""
-	renderedHtml     = ""
+	healthStatusToRender = ""
+	syncStatusToRender   = ""
+	renderedHtml         = ""
 )
 
 func TestShouldRenderErrorTemplateForEmptyArgoStatus(t *testing.T) {
-	givenStatusToRender("")
+	givenHealthStatusToRender("")
 
-	whenRenderingStatusAsHtml()
+	whenRenderingHealthStatusAsHtml()
 
 	thenRenderedHtmlIs(defaultArgoHealth, t)
 }
 
 func TestShouldRenderErrorTemplateForInvalidArgoStatus(t *testing.T) {
-	givenStatusToRender("blabla")
+	givenHealthStatusToRender("blabla")
 
-	whenRenderingStatusAsHtml()
+	whenRenderingHealthStatusAsHtml()
 
 	thenRenderedHtmlIs(defaultArgoHealth, t)
 }
 
 func TestShouldRenderHealthyArgoStatus(t *testing.T) {
-	givenStatusToRender("Healthy")
+	givenHealthStatusToRender("Healthy")
 
-	whenRenderingStatusAsHtml()
+	whenRenderingHealthStatusAsHtml()
 
 	thenRenderedHtmlIs(`<i title="Healthy" class="fa-solid fa-heart" style="color: rgb(24, 190, 148);"></i>`, t)
 }
 
 func TestShouldRenderProgressingStatus(t *testing.T) {
-	givenStatusToRender("Progressing")
+	givenHealthStatusToRender("Progressing")
 
-	whenRenderingStatusAsHtml()
+	whenRenderingHealthStatusAsHtml()
 
 	thenRenderedHtmlIs(`<i title="Progressing" class="fa fa fa-circle-notch" style="color: rgb(13, 173, 234);"></i>`, t)
 }
 
 func TestShouldRenderDegradedStatus(t *testing.T) {
-	givenStatusToRender("Degraded")
+	givenHealthStatusToRender("Degraded")
 
-	whenRenderingStatusAsHtml()
+	whenRenderingHealthStatusAsHtml()
 
 	thenRenderedHtmlIs(`<i title="Degraded" class="fa fa-heart-broken" style="color: rgb(233, 109, 118);"></i>`, t)
 }
 
 func TestShouldRenderSuspendedStatus(t *testing.T) {
-	givenStatusToRender("Suspended")
+	givenHealthStatusToRender("Suspended")
 
-	whenRenderingStatusAsHtml()
+	whenRenderingHealthStatusAsHtml()
 
 	thenRenderedHtmlIs(`<i title="Suspended" class="fa fa-pause-circle" style="color: rgb(118, 111, 148);"></i>`, t)
 }
 
 func TestShouldRenderMissingStatus(t *testing.T) {
-	givenStatusToRender("Missing")
+	givenHealthStatusToRender("Missing")
 
-	whenRenderingStatusAsHtml()
+	whenRenderingHealthStatusAsHtml()
 
 	thenRenderedHtmlIs(`<i title="Missing" class="fa fa-ghost" style="color: rgb(244, 192, 48);"></i>`, t)
 }
 
 func TestShouldRenderUnknownStatus(t *testing.T) {
-	givenStatusToRender("Unknown")
+	givenHealthStatusToRender("Unknown")
 
-	whenRenderingStatusAsHtml()
+	whenRenderingHealthStatusAsHtml()
 
 	thenRenderedHtmlIs(`<i title="Unknown" class="fa fa-question-circle" style="color: rgb(204, 214, 221);"></i>`, t)
 }
 
-func givenStatusToRender(status string) {
-	statusToRender = status
+func TestShouldRenderErrorTemplateForEmptySyncStatus(t *testing.T) {
+	givenSyncStatusToRender("")
+
+	whenRenderingSyncStatusAsHtml()
+
+	thenRenderedHtmlIs(`<i title="Error" class="fa fa-question-circle" style="color: rgb(233, 109, 118);"></i>`, t)
 }
 
-func whenRenderingStatusAsHtml() {
-	renderedHtml = argoHealthToHtml(statusToRender)
+func TestShouldRenderSyncedSyncStatus(t *testing.T) {
+	givenSyncStatusToRender("Synced")
+
+	whenRenderingSyncStatusAsHtml()
+
+	thenRenderedHtmlIs(`<i title="Synced" class="fa fa-check-circle" style="color: rgb(24, 190, 148);"></i>`, t)
+}
+
+func TestShouldRenderOutOfSyncStatus(t *testing.T) {
+	givenSyncStatusToRender("OutOfSync")
+
+	whenRenderingSyncStatusAsHtml()
+
+	thenRenderedHtmlIs(`<i title="OutOfSync" class="fa fa-arrow-alt-circle-up" style="color: rgb(244, 192, 48);"></i>`, t)
+}
+
+func givenHealthStatusToRender(status string) {
+	healthStatusToRender = status
+}
+
+func givenSyncStatusToRender(status string) {
+	syncStatusToRender = status
+}
+
+func whenRenderingSyncStatusAsHtml() {
+	renderedHtml = argoSyncStatusToHtmlFunc()(syncStatusToRender)
+}
+
+func whenRenderingHealthStatusAsHtml() {
+	renderedHtml = argoHealthToHtmlFunc()(healthStatusToRender)
 }
 
 func thenRenderedHtmlIs(expected string, t *testing.T) {
 	if renderedHtml != expected {
 		t.Errorf("Argo Status not rendered correctly in HTML!\n Given status: %s\n expected: %s\n actual:%s\n",
-			statusToRender, expected, renderedHtml)
+			healthStatusToRender, expected, renderedHtml)
 	}
 }
