@@ -177,26 +177,7 @@ func initializeAppFlags() (*bool, string, map[string]bool) {
 
 func startWebserver(values *templateValues) {
 	templates := template.Must(template.New("index.html").Funcs(template.FuncMap{
-		"argoHealth": func(status string) string {
-
-			// Took the code directly from argocd webui + chrome inspect; Due to use of fontawesome, this works
-			switch status {
-			case "Healthy":
-				return "<i title=\"Healthy\" class=\"fa-solid fa-heart\" style=\"color: rgb(24, 190, 148);\"></i>"
-			case "Progressing":
-				return "<i title=\"Progressing\" class=\"fa fa fa-circle-notch\" style=\"color: rgb(13, 173, 234);\"></i>"
-			case "Degraded":
-				return "<i title=\"Degraded\" class=\"fa fa-heart-broken\" style=\"color: rgb(233, 109, 118);\"></i>"
-			case "Suspended":
-				return "<i title=\"Suspended\" class=\"fa fa-pause-circle\" style=\"color: rgb(118, 111, 148);\"></i>"
-			case "Missing":
-				return "<i title=\"Missing\" class=\"fa fa-ghost\" style=\"color: rgb(244, 192, 48);\"></i>"
-			case "Unknown":
-				return "<i title=\"Unknown\" class=\"fa fa-question-circle\" style=\"color: rgb(204, 214, 221);\"></i>"
-			default:
-				return "<i title=\"Error\" class=\"fa fa-question-circle\" style=\"color: rgb(233, 109, 118);\"></i>"
-			}
-		},
+		"argoHealth": argoHealthToHtmlFunc(),
 		"argoSync": func(status string) string {
 
 			// Took the code directly from argocd webui + chrome inspect; Due to use of fontawesome, this works
