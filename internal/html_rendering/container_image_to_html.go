@@ -17,11 +17,11 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package main
+package html_rendering
 
 import "strings"
 
-func containerImageToHtmlFunc() func(fullImageUrl string) string {
+func ContainerImageToHtmlFunc() func(fullImageUrl string) string {
 	return func(fullImageUrl string) string {
 		if fullImageUrl == "" {
 			return ""

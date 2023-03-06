@@ -17,9 +17,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package main
+package html_rendering
 
 import (
+	"dashboard/internal/argo"
 	"testing"
 	"time"
 )
@@ -27,13 +28,13 @@ import (
 func TestShouldRenderNoneForEmptySyncHistory(t *testing.T) {
 	expectedResult := "none"
 
-	renderedHtml := lastAppSyncToHtmlFunc()(nil)
+	renderedHtml := LastAppSyncToHtmlFunc()(nil)
 
 	if renderedHtml != expectedResult {
 		t.Errorf("Did not render corretly for empty sync history! \nexpected: %s \ngot: %s", expectedResult, renderedHtml)
 	}
 
-	renderedHtml = lastAppSyncToHtmlFunc()([]history{})
+	renderedHtml = LastAppSyncToHtmlFunc()([]argo.History{})
 
 	if renderedHtml != expectedResult {
 		t.Errorf("Did not render corretly for empty sync history! \nexpected: %s \ngot: %s", expectedResult, renderedHtml)
@@ -46,19 +47,19 @@ func TestShouldRenderSyncHistory(t *testing.T) {
 		t, _ := time.Parse(time.RFC3339, "2022-09-18T08:00:00.20Z")
 		return t
 	}
-	historyEntry := history{
+	historyEntry := argo.History{
 		DeployStartedAt: "2022-09-18T07:25:40.20Z",
 		DeployedAt:      "2022-09-18T07:26:00.20Z",
 		Id:              1,
 		Revision:        "b8d56b2d875b183f3109f645443373e18f56783b",
 	}
 
-	historyEntries := []history{
+	historyEntries := []argo.History{
 		historyEntry,
 	}
 	expectedHtml := `<li>` + historyEntry.DeployedAt + ` (34m0s)<br/>rev: ` + historyEntry.Revision + `</li>`
 
-	renderedHtml := lastAppSyncToHtmlFunc()(historyEntries)
+	renderedHtml := LastAppSyncToHtmlFunc()(historyEntries)
 
 	if renderedHtml != expectedHtml {
 		t.Errorf("Sync history Entry not rendered correctly! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)
@@ -70,26 +71,26 @@ func TestShouldOrderBySyncHistoryId(t *testing.T) {
 		t, _ := time.Parse(time.RFC3339, "2022-09-18T08:00:00.20Z")
 		return t
 	}
-	firstHistoryEntry := history{
+	firstHistoryEntry := argo.History{
 		DeployStartedAt: "2022-09-18T07:25:40.20Z",
 		DeployedAt:      "2022-09-18T07:26:00.20Z",
 		Id:              1,
 		Revision:        "c4232944d8e75ab1e23067f1cf4c88f51f82317e",
 	}
-	secondHistoryEntry := history{
+	secondHistoryEntry := argo.History{
 		DeployStartedAt: "2022-09-18T07:25:40.20Z",
 		DeployedAt:      "2022-09-18T07:26:00.20Z",
 		Id:              2,
 		Revision:        "b8d56b2d875b183f3109f645443373e18f56783b",
 	}
-	thirdHistoryEntry := history{
+	thirdHistoryEntry := argo.History{
 		DeployStartedAt: "2022-09-18T07:25:40.20Z",
 		DeployedAt:      "2022-09-18T07:26:00.20Z",
 		Id:              3,
 		Revision:        "30a8d5a5e31091a0a450ecde84ac4b0bc3f57cef",
 	}
 
-	historyEntries := []history{
+	historyEntries := []argo.History{
 		secondHistoryEntry,
 		thirdHistoryEntry,
 		firstHistoryEntry,
@@ -99,7 +100,7 @@ func TestShouldOrderBySyncHistoryId(t *testing.T) {
 	expectedHtml += `<li>` + secondHistoryEntry.DeployedAt + ` (34m0s)<br/>rev: ` + secondHistoryEntry.Revision + `</li>`
 	expectedHtml += `<li>` + firstHistoryEntry.DeployedAt + ` (34m0s)<br/>rev: ` + firstHistoryEntry.Revision + `</li>`
 
-	renderedHtml := lastAppSyncToHtmlFunc()(historyEntries)
+	renderedHtml := LastAppSyncToHtmlFunc()(historyEntries)
 
 	if renderedHtml != expectedHtml {
 		t.Errorf("Sync history not sorted! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)

@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package main
+package html_rendering
 
 const (
 	defaultArgoHealthTemplate     = `<i title="Error" class="fa fa-question-circle" style="color: rgb(233, 109, 118);"></i>`
@@ -39,7 +39,7 @@ var (
 	}
 )
 
-func argoHealthToHtmlFunc() func(status string) string {
+func ArgoHealthToHtmlFunc() func(status string) string {
 	return func(status string) string {
 		htmlTemplate, found := argoHealthToHtmlTemplate[status]
 
@@ -51,7 +51,7 @@ func argoHealthToHtmlFunc() func(status string) string {
 	}
 }
 
-func argoSyncStatusToHtmlFunc() func(status string) string {
+func ArgoSyncStatusToHtmlFunc() func(status string) string {
 	return func(status string) string {
 		htmlTemplate, found := argoSyncStatusToHtmlTemplate[status]
 

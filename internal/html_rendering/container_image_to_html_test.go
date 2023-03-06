@@ -17,12 +17,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package main
+package html_rendering
 
 import "testing"
 
 func TestShouldRenderNothingForEmptyImageUrl(t *testing.T) {
-	renderedHtml := containerImageToHtmlFunc()("")
+	renderedHtml := ContainerImageToHtmlFunc()("")
 
 	if renderedHtml != "" {
 		t.Errorf("Did render something for empty image. Nothing expected! Got: %s", renderedHtml)
@@ -33,7 +33,7 @@ func TestShouldRenderOfficialImagesUnchanged(t *testing.T) {
 	officialImageName := "busybox:latest"
 	expectedHtml := `<span class="image">busybox</span>:<span class="tag">latest</span>`
 
-	renderedHtml := containerImageToHtmlFunc()(officialImageName)
+	renderedHtml := ContainerImageToHtmlFunc()(officialImageName)
 
 	if renderedHtml != expectedHtml {
 		t.Errorf("Did not render official image correctly! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)
@@ -44,7 +44,7 @@ func TestShouldRenderImagesWithNamespace(t *testing.T) {
 	imageWithNamespace := "tractusx/app-dashboard:1.0.0"
 	expectedHtml := `<span class="image">tractusx/app-dashboard</span>:<span class="tag">1.0.0</span>`
 
-	renderedHtml := containerImageToHtmlFunc()(imageWithNamespace)
+	renderedHtml := ContainerImageToHtmlFunc()(imageWithNamespace)
 
 	if renderedHtml != expectedHtml {
 		t.Errorf("Did not render image with namespace! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)
@@ -55,7 +55,7 @@ func TestShouldRenderImageFromAnyContainerRegistry(t *testing.T) {
 	ghcrImage := "ghcr.io/catenax-ng/semantic-hub:0.1.0-M3"
 	expectedHtml := `<span class="host">ghcr.io</span>/<span class="image">catenax-ng/semantic-hub</span>:<span class="tag">0.1.0-M3</span>`
 
-	renderedHtml := containerImageToHtmlFunc()(ghcrImage)
+	renderedHtml := ContainerImageToHtmlFunc()(ghcrImage)
 
 	if renderedHtml != expectedHtml {
 		t.Errorf("Did not render image from non DockerHub registry! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)
@@ -66,7 +66,7 @@ func TestShouldRenderImageWithMultipleNamespaces(t *testing.T) {
 	imageWithMultipleNamespaces := "tractusx/traceability/irs/item-relationship-service:1.0.0"
 	expectedHtml := `<span class="path">tractusx/traceability</span>/<span class="image">irs/item-relationship-service</span>:<span class="tag">1.0.0</span>`
 
-	renderedHtml := containerImageToHtmlFunc()(imageWithMultipleNamespaces)
+	renderedHtml := ContainerImageToHtmlFunc()(imageWithMultipleNamespaces)
 
 	if renderedHtml != expectedHtml {
 		t.Errorf("Did not render image with multiple namespaces! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)

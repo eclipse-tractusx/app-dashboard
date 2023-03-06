@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package main
+package html_rendering
 
 import "testing"
 
@@ -128,11 +128,11 @@ func givenSyncStatusToRender(status string) {
 }
 
 func whenRenderingSyncStatusAsHtml() {
-	renderedHtml = argoSyncStatusToHtmlFunc()(syncStatusToRender)
+	renderedHtml = ArgoSyncStatusToHtmlFunc()(syncStatusToRender)
 }
 
 func whenRenderingHealthStatusAsHtml() {
-	renderedHtml = argoHealthToHtmlFunc()(healthStatusToRender)
+	renderedHtml = ArgoHealthToHtmlFunc()(healthStatusToRender)
 }
 
 func thenRenderedHtmlIs(expected string, t *testing.T) {

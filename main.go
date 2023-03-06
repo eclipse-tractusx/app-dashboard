@@ -22,6 +22,9 @@ package main
 
 import (
 	"context"
+	"dashboard/internal/app"
+	"dashboard/internal/argo"
+	"dashboard/internal/html_rendering"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -40,7 +43,7 @@ import (
 )
 
 type templateValues struct {
-	Res             Applications
+	Res             argo.Applications
 	LastSync        time.Time
 	InitialSync     bool
 	IgnoreNamespace map[string]bool
@@ -54,7 +57,7 @@ var errorPage []byte
 const k8sRefreshTimeInSeconds = 300 // 5 Minutes
 
 func main() {
-	cluster, envName, ignoreNamespace := initializeAppFlags()
+	dashboard := app.NewDashboard()
 
 	var err error
 	errorPage, err = os.ReadFile("web/error.html")
@@ -62,7 +65,7 @@ func main() {
 		panic(err)
 	}
 
-	clientSet := GetClientSet(*cluster)
+	clientSet := GetClientSet(*dashboard.RunsInCluster)
 
 	version, err := clientSet.DiscoveryClient.ServerVersion()
 	if err != nil {
@@ -70,20 +73,28 @@ func main() {
 	}
 
 	values := templateValues{
-		Res:             Applications{},
+		Res:             argo.Applications{},
 		LastSync:        time.Now(),
 		InitialSync:     false,
-		IgnoreNamespace: ignoreNamespace,
-		Environment:     envName,
+		IgnoreNamespace: ignoredNamespacesAsMap(dashboard.IgnoredNamespaces),
+		Environment:     dashboard.EnvironmentName,
 		GitVersion:      version.GitVersion,
 		AppVersion:      1,
 	}
 
 	go startWebserver(&values)
 
-	go refreshApplications(&values, k8sRefreshTimeInSeconds, clientSet, ignoreNamespace)
+	go refreshApplications(&values, k8sRefreshTimeInSeconds, clientSet, ignoredNamespacesAsMap(dashboard.IgnoredNamespaces))
 
 	time.Sleep(time.Duration(1<<63 - 1))
+}
+
+func ignoredNamespacesAsMap(namespaces []string) map[string]bool {
+	result := make(map[string]bool, len(namespaces))
+	for _, namespace := range namespaces {
+		result[namespace] = true
+	}
+	return result
 }
 
 func refreshApplications(values *templateValues, refreshTimeInSeconds float64, clientset *kubernetes.Clientset, ignoreNamespace map[string]bool) {
@@ -97,8 +108,8 @@ func refreshApplications(values *templateValues, refreshTimeInSeconds float64, c
 	}
 }
 
-func requestAndTransformApplications(clientset *kubernetes.Clientset, ignoreNamespace map[string]bool) Applications {
-	var applicationsResponse = Applications{}
+func requestAndTransformApplications(clientset *kubernetes.Clientset, ignoreNamespace map[string]bool) argo.Applications {
+	var applicationsResponse = argo.Applications{}
 
 	d, err := clientset.RESTClient().Get().AbsPath("/apis/argoproj.io/v1alpha1/applications").DoRaw(context.TODO())
 	if err != nil {
@@ -126,7 +137,7 @@ func requestAndTransformApplications(clientset *kubernetes.Clientset, ignoreName
 	return applicationsResponse
 }
 
-func transformApplicationsResponse(applicationsResponse Applications, ignoreNamespace map[string]bool) {
+func transformApplicationsResponse(applicationsResponse argo.Applications, ignoreNamespace map[string]bool) {
 	for i, item := range applicationsResponse.Items {
 		applicationsResponse.Items[i].IgnoreNamespace = false
 		if _, ok := ignoreNamespace[applicationsResponse.Items[i].Spec.Destination.Namespace]; ok {
@@ -177,12 +188,12 @@ func initializeAppFlags() (*bool, string, map[string]bool) {
 
 func startWebserver(values *templateValues) {
 	templates := template.Must(template.New("index.html").Funcs(template.FuncMap{
-		"argoHealth": argoHealthToHtmlFunc(),
-		"argoSync":   argoSyncStatusToHtmlFunc(),
+		"argoHealth": html_rendering.ArgoHealthToHtmlFunc(),
+		"argoSync":   html_rendering.ArgoSyncStatusToHtmlFunc(),
 		"fixGithubUrl": func(url string) string {
 			return strings.TrimSuffix(strings.ReplaceAll(url, "git@github.com:", "https://github.com/"), ".git")
 		},
-		"lastAppSyncShort": func(history []history) string {
+		"lastAppSyncShort": func(history []argo.History) string {
 			sort.Slice(history, func(i, j int) bool {
 				return history[i].Id > history[j].Id
 			})
@@ -200,7 +211,7 @@ func startWebserver(values *templateValues) {
 
 			return fmt.Sprint(duration)
 		},
-		"lastAppSyncLong": lastAppSyncToHtmlFunc(),
+		"lastAppSyncLong": html_rendering.LastAppSyncToHtmlFunc(),
 		"lastSync": func(lastUpdate time.Time) string {
 
 			duration := time.Now().Sub(lastUpdate).Round(time.Second)
@@ -222,7 +233,7 @@ func startWebserver(values *templateValues) {
 
 			return strings.TrimSuffix(result, ", ")
 		},
-		"image": containerImageToHtmlFunc(),
+		"image": html_rendering.ContainerImageToHtmlFunc(),
 	}).ParseFiles("./web/template/index.html"))
 
 	http.Handle("/css/", maxAgeHandler(86400, http.StripPrefix("/css/",

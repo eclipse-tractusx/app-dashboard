@@ -17,46 +17,45 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package main
+package app
 
 import (
-	"fmt"
-	"sort"
-	"time"
+	"flag"
+	"os"
+	"strings"
 )
 
-var currentTime = getCurrentTime
-
-func lastAppSyncToHtmlFunc() func(history []history) string {
-	return func(history []history) string {
-		sort.Slice(history, func(i, j int) bool {
-			return history[i].Id > history[j].Id
-		})
-
-		if len(history) < 1 {
-			return "none"
-		}
-
-		var result string
-		for _, entry := range history {
-
-			t, _ := time.Parse("2006-01-02T15:04:05Z07:00", entry.DeployedAt)
-			duration := currentTime().Sub(t).Round(time.Minute)
-
-			var since string
-			if duration.Hours() > 24 {
-				since = fmt.Sprintf("%v days", int(duration.Hours()/24))
-			} else {
-				since = fmt.Sprintf("%v", duration)
-			}
-
-			result += "<li>" + entry.DeployedAt + " (" + since + ")<br/>rev: " + entry.Revision + "</li>"
-		}
-
-		return result
-	}
+type Dashboard struct {
+	RunsInCluster     *bool
+	IgnoredNamespaces []string
+	EnvironmentName   string
 }
 
-func getCurrentTime() time.Time {
-	return time.Now()
+func NewDashboard() *Dashboard {
+	dashboard := new(Dashboard)
+
+	dashboard.RunsInCluster = flag.Bool("in-cluster", false, "Specify if the code is running inside a cluster or from outside.")
+	dashboard.IgnoredNamespaces = getIgnoredNamespaces()
+	dashboard.EnvironmentName = getEnvironmentName()
+
+	flag.Parse()
+	return dashboard
+}
+
+func getEnvironmentName() string {
+	envNameFromENV := strings.TrimSpace(os.Getenv("ENVIRONMENT_NAME"))
+
+	if envNameFromENV != "" {
+		return envNameFromENV
+	}
+	return "Unset"
+}
+
+func getIgnoredNamespaces() []string {
+	ignoreNamespaceRaw := strings.TrimSpace(os.Getenv("IGNORE_NAMESPACE"))
+
+	if ignoreNamespaceRaw != "" {
+		return strings.Split(ignoreNamespaceRaw, ",")
+	}
+	return []string{}
 }
