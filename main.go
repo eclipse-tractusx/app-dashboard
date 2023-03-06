@@ -200,33 +200,7 @@ func startWebserver(values *templateValues) {
 
 			return fmt.Sprint(duration)
 		},
-		"lastAppSyncLong": func(history []history) string {
-			sort.Slice(history, func(i, j int) bool {
-				return history[i].Id > history[j].Id
-			})
-
-			if len(history) < 1 {
-				return "none"
-			}
-
-			var result string
-			for _, entry := range history {
-
-				t, _ := time.Parse("2006-01-02T15:04:05Z07:00", entry.DeployedAt)
-				duration := time.Now().Sub(t).Round(time.Minute)
-
-				var since string
-				if duration.Hours() > 24 {
-					since = fmt.Sprintf("%v days", int(duration.Hours()/24))
-				} else {
-					since = fmt.Sprintf("%v", duration)
-				}
-
-				result += "<li>" + entry.DeployedAt + " (" + since + ")<br/>rev: " + entry.Revision + "</li>"
-			}
-
-			return result
-		},
+		"lastAppSyncLong": lastAppSyncToHtmlFunc(),
 		"lastSync": func(lastUpdate time.Time) string {
 
 			duration := time.Now().Sub(lastUpdate).Round(time.Second)
@@ -248,46 +222,7 @@ func startWebserver(values *templateValues) {
 
 			return strings.TrimSuffix(result, ", ")
 		},
-		"image": func(fullImageUrl string) string {
-
-			if len(fullImageUrl) == 0 {
-				return fullImageUrl
-			}
-
-			parts := strings.Split(fullImageUrl, "/")
-
-			if len(parts) == 0 {
-				return fullImageUrl
-			}
-
-			tags := strings.Split(parts[len(parts)-1], ":")
-
-			var tag string
-			var image string
-			if len(tags) == 2 {
-				tag = tags[1]
-				image = tags[0]
-			} else {
-				return image
-			}
-
-			var path string
-			for i, part := range parts {
-				if i >= len(parts)-2 {
-					break
-				}
-
-				if i == 0 {
-					path += "<span class=\"host\">" + part + "</span>/"
-				} else {
-					path += "<span class=\"path\">" + part + "</span>/"
-				}
-
-			}
-
-			return path + "<span class=\"image\">" + image + "</span>:<span class=\"tag\">" + tag + "</span>"
-
-		},
+		"image": containerImageToHtmlFunc(),
 	}).ParseFiles("./web/template/index.html"))
 
 	http.Handle("/css/", maxAgeHandler(86400, http.StripPrefix("/css/",
