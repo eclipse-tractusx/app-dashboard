@@ -177,38 +177,8 @@ func initializeAppFlags() (*bool, string, map[string]bool) {
 
 func startWebserver(values *templateValues) {
 	templates := template.Must(template.New("index.html").Funcs(template.FuncMap{
-		"argoHealth": func(status string) string {
-
-			// Took the code directly from argocd webui + chrome inspect; Due to use of fontawesome, this works
-			switch status {
-			case "Healthy":
-				return "<i title=\"Healthy\" class=\"fa-solid fa-heart\" style=\"color: rgb(24, 190, 148);\"></i>"
-			case "Progressing":
-				return "<i title=\"Progressing\" class=\"fa fa fa-circle-notch\" style=\"color: rgb(13, 173, 234);\"></i>"
-			case "Degraded":
-				return "<i title=\"Degraded\" class=\"fa fa-heart-broken\" style=\"color: rgb(233, 109, 118);\"></i>"
-			case "Suspended":
-				return "<i title=\"Suspended\" class=\"fa fa-pause-circle\" style=\"color: rgb(118, 111, 148);\"></i>"
-			case "Missing":
-				return "<i title=\"Missing\" class=\"fa fa-ghost\" style=\"color: rgb(244, 192, 48);\"></i>"
-			case "Unknown":
-				return "<i title=\"Unknown\" class=\"fa fa-question-circle\" style=\"color: rgb(204, 214, 221);\"></i>"
-			default:
-				return "<i title=\"Error\" class=\"fa fa-question-circle\" style=\"color: rgb(233, 109, 118);\"></i>"
-			}
-		},
-		"argoSync": func(status string) string {
-
-			// Took the code directly from argocd webui + chrome inspect; Due to use of fontawesome, this works
-			switch status {
-			case "Synced":
-				return "<i title=\"Synced\" class=\"fa fa-check-circle\" style=\"color: rgb(24, 190, 148);\"></i>"
-			case "OutOfSync":
-				return "<i title=\"OutOfSync\" class=\"fa fa-arrow-alt-circle-up\" style=\"color: rgb(244, 192, 48);\"></i>"
-			default:
-				return "<i title=\"Error\" class=\"fa fa-question-circle\" style=\"color: rgb(233, 109, 118);\"></i>"
-			}
-		},
+		"argoHealth": argoHealthToHtmlFunc(),
+		"argoSync":   argoSyncStatusToHtmlFunc(),
 		"fixGithubUrl": func(url string) string {
 			return strings.TrimSuffix(strings.ReplaceAll(url, "git@github.com:", "https://github.com/"), ".git")
 		},
@@ -230,33 +200,7 @@ func startWebserver(values *templateValues) {
 
 			return fmt.Sprint(duration)
 		},
-		"lastAppSyncLong": func(history []history) string {
-			sort.Slice(history, func(i, j int) bool {
-				return history[i].Id > history[j].Id
-			})
-
-			if len(history) < 1 {
-				return "none"
-			}
-
-			var result string
-			for _, entry := range history {
-
-				t, _ := time.Parse("2006-01-02T15:04:05Z07:00", entry.DeployedAt)
-				duration := time.Now().Sub(t).Round(time.Minute)
-
-				var since string
-				if duration.Hours() > 24 {
-					since = fmt.Sprintf("%v days", int(duration.Hours()/24))
-				} else {
-					since = fmt.Sprintf("%v", duration)
-				}
-
-				result += "<li>" + entry.DeployedAt + " (" + since + ")<br/>rev: " + entry.Revision + "</li>"
-			}
-
-			return result
-		},
+		"lastAppSyncLong": lastAppSyncToHtmlFunc(),
 		"lastSync": func(lastUpdate time.Time) string {
 
 			duration := time.Now().Sub(lastUpdate).Round(time.Second)
@@ -278,46 +222,7 @@ func startWebserver(values *templateValues) {
 
 			return strings.TrimSuffix(result, ", ")
 		},
-		"image": func(fullImageUrl string) string {
-
-			if len(fullImageUrl) == 0 {
-				return fullImageUrl
-			}
-
-			parts := strings.Split(fullImageUrl, "/")
-
-			if len(parts) == 0 {
-				return fullImageUrl
-			}
-
-			tags := strings.Split(parts[len(parts)-1], ":")
-
-			var tag string
-			var image string
-			if len(tags) == 2 {
-				tag = tags[1]
-				image = tags[0]
-			} else {
-				return image
-			}
-
-			var path string
-			for i, part := range parts {
-				if i >= len(parts)-2 {
-					break
-				}
-
-				if i == 0 {
-					path += "<span class=\"host\">" + part + "</span>/"
-				} else {
-					path += "<span class=\"path\">" + part + "</span>/"
-				}
-
-			}
-
-			return path + "<span class=\"image\">" + image + "</span>:<span class=\"tag\">" + tag + "</span>"
-
-		},
+		"image": containerImageToHtmlFunc(),
 	}).ParseFiles("./web/template/index.html"))
 
 	http.Handle("/css/", maxAgeHandler(86400, http.StripPrefix("/css/",
