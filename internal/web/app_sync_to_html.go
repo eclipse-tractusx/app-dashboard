@@ -17,10 +17,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package html_rendering
+package web
 
 import (
-	"dashboard/internal/argo"
+	"dashboard/internal/app"
 	"fmt"
 	"sort"
 	"time"
@@ -28,8 +28,8 @@ import (
 
 var currentTime = getCurrentTime
 
-func LastAppSyncToHtmlFunc() func(history []argo.History) string {
-	return func(history []argo.History) string {
+func LastAppSyncToHtmlFunc() func(history []app.History) string {
+	return func(history []app.History) string {
 		sort.Slice(history, func(i, j int) bool {
 			return history[i].Id > history[j].Id
 		})

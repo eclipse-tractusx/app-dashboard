@@ -17,10 +17,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package html_rendering
+package web
 
 import (
-	"dashboard/internal/argo"
+	"dashboard/internal/app"
 	"testing"
 	"time"
 )
@@ -34,7 +34,7 @@ func TestShouldRenderNoneForEmptySyncHistory(t *testing.T) {
 		t.Errorf("Did not render corretly for empty sync history! \nexpected: %s \ngot: %s", expectedResult, renderedHtml)
 	}
 
-	renderedHtml = LastAppSyncToHtmlFunc()([]argo.History{})
+	renderedHtml = LastAppSyncToHtmlFunc()([]app.History{})
 
 	if renderedHtml != expectedResult {
 		t.Errorf("Did not render corretly for empty sync history! \nexpected: %s \ngot: %s", expectedResult, renderedHtml)
@@ -47,14 +47,14 @@ func TestShouldRenderSyncHistory(t *testing.T) {
 		t, _ := time.Parse(time.RFC3339, "2022-09-18T08:00:00.20Z")
 		return t
 	}
-	historyEntry := argo.History{
+	historyEntry := app.History{
 		DeployStartedAt: "2022-09-18T07:25:40.20Z",
 		DeployedAt:      "2022-09-18T07:26:00.20Z",
 		Id:              1,
 		Revision:        "b8d56b2d875b183f3109f645443373e18f56783b",
 	}
 
-	historyEntries := []argo.History{
+	historyEntries := []app.History{
 		historyEntry,
 	}
 	expectedHtml := `<li>` + historyEntry.DeployedAt + ` (34m0s)<br/>rev: ` + historyEntry.Revision + `</li>`
@@ -71,26 +71,26 @@ func TestShouldOrderBySyncHistoryId(t *testing.T) {
 		t, _ := time.Parse(time.RFC3339, "2022-09-18T08:00:00.20Z")
 		return t
 	}
-	firstHistoryEntry := argo.History{
+	firstHistoryEntry := app.History{
 		DeployStartedAt: "2022-09-18T07:25:40.20Z",
 		DeployedAt:      "2022-09-18T07:26:00.20Z",
 		Id:              1,
 		Revision:        "c4232944d8e75ab1e23067f1cf4c88f51f82317e",
 	}
-	secondHistoryEntry := argo.History{
+	secondHistoryEntry := app.History{
 		DeployStartedAt: "2022-09-18T07:25:40.20Z",
 		DeployedAt:      "2022-09-18T07:26:00.20Z",
 		Id:              2,
 		Revision:        "b8d56b2d875b183f3109f645443373e18f56783b",
 	}
-	thirdHistoryEntry := argo.History{
+	thirdHistoryEntry := app.History{
 		DeployStartedAt: "2022-09-18T07:25:40.20Z",
 		DeployedAt:      "2022-09-18T07:26:00.20Z",
 		Id:              3,
 		Revision:        "30a8d5a5e31091a0a450ecde84ac4b0bc3f57cef",
 	}
 
-	historyEntries := []argo.History{
+	historyEntries := []app.History{
 		secondHistoryEntry,
 		thirdHistoryEntry,
 		firstHistoryEntry,

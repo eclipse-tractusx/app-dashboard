@@ -20,42 +20,54 @@
 package app
 
 import (
-	"flag"
-	"os"
-	"strings"
+	"time"
 )
 
 type Dashboard struct {
-	RunsInCluster     *bool
-	IgnoredNamespaces []string
-	EnvironmentName   string
+	config                   *ApplicationConfig
+	web                      Webserver
+	gateway                  ApplicationGateway
+	syncResult               *ApplicationsSyncResult
+	refreshIntervalInSeconds float64
 }
 
-func NewDashboard() *Dashboard {
-	dashboard := new(Dashboard)
-
-	dashboard.RunsInCluster = flag.Bool("in-cluster", false, "Specify if the code is running inside a cluster or from outside.")
-	dashboard.IgnoredNamespaces = getIgnoredNamespaces()
-	dashboard.EnvironmentName = getEnvironmentName()
-
-	flag.Parse()
-	return dashboard
-}
-
-func getEnvironmentName() string {
-	envNameFromENV := strings.TrimSpace(os.Getenv("ENVIRONMENT_NAME"))
-
-	if envNameFromENV != "" {
-		return envNameFromENV
+func NewDashboard(gateway ApplicationGateway, web Webserver, config *ApplicationConfig) *Dashboard {
+	return &Dashboard{
+		refreshIntervalInSeconds: 5 * 60,
+		gateway:                  gateway,
+		web:                      web,
+		config:                   config,
+		syncResult: &ApplicationsSyncResult{
+			Res:             Applications{},
+			LastSync:        time.Now(),
+			InitialSync:     false,
+			IgnoreNamespace: ignoredNamespacesAsMap(config.IgnoredNamespaces),
+			Environment:     config.EnvironmentName,
+			GitVersion:      "",
+			AppVersion:      1,
+		},
 	}
-	return "Unset"
 }
 
-func getIgnoredNamespaces() []string {
-	ignoreNamespaceRaw := strings.TrimSpace(os.Getenv("IGNORE_NAMESPACE"))
+func (d *Dashboard) Run() {
+	go d.web.Start(8080, d.syncResult)
+	go d.syncApplications()
+}
 
-	if ignoreNamespaceRaw != "" {
-		return strings.Split(ignoreNamespaceRaw, ",")
+func (d *Dashboard) syncApplications() {
+	for true {
+		d.syncResult.Res = d.gateway.GetApplications()
+		d.syncResult.LastSync = time.Now()
+		d.syncResult.InitialSync = true
+
+		time.Sleep(time.Duration(d.refreshIntervalInSeconds * float64(time.Second)))
 	}
-	return []string{}
+}
+
+func ignoredNamespacesAsMap(namespaces []string) map[string]bool {
+	result := make(map[string]bool, len(namespaces))
+	for _, namespace := range namespaces {
+		result[namespace] = true
+	}
+	return result
 }
