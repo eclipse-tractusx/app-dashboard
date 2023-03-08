@@ -76,8 +76,8 @@ func (web *Webserver) configureRootHandler(template *template.Template, syncResu
 
 func createHtmlTemplate() *template.Template {
 	templates := template.Must(template.New("index.html").Funcs(template.FuncMap{
-		"argoHealth": ArgoHealthToHtmlFunc(),
-		"argoSync":   ArgoSyncStatusToHtmlFunc(),
+		"argoHealth": argoHealthToHtmlFunc(),
+		"argoSync":   argoSyncStatusToHtmlFunc(),
 		"fixGithubUrl": func(url string) string {
 			return strings.TrimSuffix(strings.ReplaceAll(url, "git@github.com:", "https://github.com/"), ".git")
 		},
@@ -99,7 +99,7 @@ func createHtmlTemplate() *template.Template {
 
 			return fmt.Sprint(duration)
 		},
-		"lastAppSyncLong": LastAppSyncToHtmlFunc(),
+		"lastAppSyncLong": lastAppSyncToHtmlFunc(),
 		"lastSync": func(lastUpdate time.Time) string {
 
 			duration := time.Now().Sub(lastUpdate).Round(time.Second)
@@ -121,7 +121,7 @@ func createHtmlTemplate() *template.Template {
 
 			return strings.TrimSuffix(result, ", ")
 		},
-		"image": ContainerImageToHtmlFunc(),
+		"image": containerImageToHtmlFunc(),
 	}).ParseFiles("./web/template/index.html"))
 
 	return templates

@@ -128,11 +128,11 @@ func givenSyncStatusToRender(status string) {
 }
 
 func whenRenderingSyncStatusAsHtml() {
-	renderedHtml = ArgoSyncStatusToHtmlFunc()(syncStatusToRender)
+	renderedHtml = argoSyncStatusToHtmlFunc()(syncStatusToRender)
 }
 
 func whenRenderingHealthStatusAsHtml() {
-	renderedHtml = ArgoHealthToHtmlFunc()(healthStatusToRender)
+	renderedHtml = argoHealthToHtmlFunc()(healthStatusToRender)
 }
 
 func thenRenderedHtmlIs(expected string, t *testing.T) {

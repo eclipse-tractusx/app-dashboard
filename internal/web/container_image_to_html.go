@@ -21,7 +21,7 @@ package web
 
 import "strings"
 
-func ContainerImageToHtmlFunc() func(fullImageUrl string) string {
+func containerImageToHtmlFunc() func(fullImageUrl string) string {
 	return func(fullImageUrl string) string {
 		if fullImageUrl == "" {
 			return ""

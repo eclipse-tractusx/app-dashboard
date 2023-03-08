@@ -39,7 +39,7 @@ var (
 	}
 )
 
-func ArgoHealthToHtmlFunc() func(status string) string {
+func argoHealthToHtmlFunc() func(status string) string {
 	return func(status string) string {
 		htmlTemplate, found := argoHealthToHtmlTemplate[status]
 
@@ -51,7 +51,7 @@ func ArgoHealthToHtmlFunc() func(status string) string {
 	}
 }
 
-func ArgoSyncStatusToHtmlFunc() func(status string) string {
+func argoSyncStatusToHtmlFunc() func(status string) string {
 	return func(status string) string {
 		htmlTemplate, found := argoSyncStatusToHtmlTemplate[status]
 

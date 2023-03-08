@@ -28,13 +28,13 @@ import (
 func TestShouldRenderNoneForEmptySyncHistory(t *testing.T) {
 	expectedResult := "none"
 
-	renderedHtml := LastAppSyncToHtmlFunc()(nil)
+	renderedHtml := lastAppSyncToHtmlFunc()(nil)
 
 	if renderedHtml != expectedResult {
 		t.Errorf("Did not render corretly for empty sync history! \nexpected: %s \ngot: %s", expectedResult, renderedHtml)
 	}
 
-	renderedHtml = LastAppSyncToHtmlFunc()([]app.History{})
+	renderedHtml = lastAppSyncToHtmlFunc()([]app.History{})
 
 	if renderedHtml != expectedResult {
 		t.Errorf("Did not render corretly for empty sync history! \nexpected: %s \ngot: %s", expectedResult, renderedHtml)
@@ -59,7 +59,7 @@ func TestShouldRenderSyncHistory(t *testing.T) {
 	}
 	expectedHtml := `<li>` + historyEntry.DeployedAt + ` (34m0s)<br/>rev: ` + historyEntry.Revision + `</li>`
 
-	renderedHtml := LastAppSyncToHtmlFunc()(historyEntries)
+	renderedHtml := lastAppSyncToHtmlFunc()(historyEntries)
 
 	if renderedHtml != expectedHtml {
 		t.Errorf("Sync history Entry not rendered correctly! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)
@@ -100,7 +100,7 @@ func TestShouldOrderBySyncHistoryId(t *testing.T) {
 	expectedHtml += `<li>` + secondHistoryEntry.DeployedAt + ` (34m0s)<br/>rev: ` + secondHistoryEntry.Revision + `</li>`
 	expectedHtml += `<li>` + firstHistoryEntry.DeployedAt + ` (34m0s)<br/>rev: ` + firstHistoryEntry.Revision + `</li>`
 
-	renderedHtml := LastAppSyncToHtmlFunc()(historyEntries)
+	renderedHtml := lastAppSyncToHtmlFunc()(historyEntries)
 
 	if renderedHtml != expectedHtml {
 		t.Errorf("Sync history not sorted! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)
