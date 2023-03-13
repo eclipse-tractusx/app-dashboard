@@ -71,7 +71,7 @@ type metadata struct {
 type spec struct {
 	Destination destination
 	Project     string
-	Source      source
+	Source      Source
 }
 
 type status struct {
@@ -86,7 +86,7 @@ type destination struct {
 	Server    string
 }
 
-type source struct {
+type Source struct {
 	RepoUrl        string
 	Path           string
 	TargetRevision string
@@ -101,7 +101,7 @@ type History struct {
 	DeployedAt      string
 	Id              int
 	Revision        string
-	Source          source
+	Source          Source
 }
 
 type summary struct {
@@ -113,6 +113,6 @@ type summary struct {
 }
 
 type statusSync struct {
-	Source source
+	Source Source
 	Status string
 }
