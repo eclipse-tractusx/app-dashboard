@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package main
+package web
 
 const (
 	defaultArgoHealthTemplate     = `<i title="Error" class="fa fa-question-circle" style="color: rgb(233, 109, 118);"></i>`

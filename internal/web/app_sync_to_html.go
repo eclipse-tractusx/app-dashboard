@@ -17,9 +17,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package main
+package web
 
 import (
+	"dashboard/internal/app"
 	"fmt"
 	"sort"
 	"time"
@@ -27,8 +28,8 @@ import (
 
 var currentTime = getCurrentTime
 
-func lastAppSyncToHtmlFunc() func(history []history) string {
-	return func(history []history) string {
+func lastAppSyncToHtmlFunc() func(history []app.History) string {
+	return func(history []app.History) string {
 		sort.Slice(history, func(i, j int) bool {
 			return history[i].Id > history[j].Id
 		})
