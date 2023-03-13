@@ -52,12 +52,17 @@ func TestShouldRenderSyncHistory(t *testing.T) {
 		DeployedAt:      "2022-09-18T07:26:00.20Z",
 		Id:              1,
 		Revision:        "b8d56b2d875b183f3109f645443373e18f56783b",
+		Source: app.Source{
+			RepoUrl:        "https://github.com/eclipse-tractusx/app-dashboard",
+			Path:           "",
+			TargetRevision: "3d7377d0af2683eb89f7c572d7f01fa794260e55",
+		},
 	}
 
 	historyEntries := []app.History{
 		historyEntry,
 	}
-	expectedHtml := `<li>` + historyEntry.DeployedAt + ` (34m0s)<br/>rev: ` + historyEntry.Revision + `</li>`
+	expectedHtml := `<li>` + historyEntry.DeployedAt + ` (34m0s)<br/>rev: <a href="https://github.com/eclipse-tractusx/app-dashboard/tree/3d7377d0af2683eb89f7c572d7f01fa794260e55">3d7377d0af2683eb89f7c572d7f01fa794260e55</a></li>`
 
 	renderedHtml := lastAppSyncToHtmlFunc()(historyEntries)
 
@@ -76,18 +81,33 @@ func TestShouldOrderBySyncHistoryId(t *testing.T) {
 		DeployedAt:      "2022-09-18T07:26:00.20Z",
 		Id:              1,
 		Revision:        "c4232944d8e75ab1e23067f1cf4c88f51f82317e",
+		Source: app.Source{
+			RepoUrl:        "https://github.com/eclipse-tractusx/app-dashboard",
+			Path:           "",
+			TargetRevision: "c4232944d8e75ab1e23067f1cf4c88f51f82317e",
+		},
 	}
 	secondHistoryEntry := app.History{
 		DeployStartedAt: "2022-09-18T07:25:40.20Z",
 		DeployedAt:      "2022-09-18T07:26:00.20Z",
 		Id:              2,
 		Revision:        "b8d56b2d875b183f3109f645443373e18f56783b",
+		Source: app.Source{
+			RepoUrl:        "https://github.com/eclipse-tractusx/app-dashboard",
+			Path:           "",
+			TargetRevision: "b8d56b2d875b183f3109f645443373e18f56783b",
+		},
 	}
 	thirdHistoryEntry := app.History{
 		DeployStartedAt: "2022-09-18T07:25:40.20Z",
 		DeployedAt:      "2022-09-18T07:26:00.20Z",
 		Id:              3,
 		Revision:        "30a8d5a5e31091a0a450ecde84ac4b0bc3f57cef",
+		Source: app.Source{
+			RepoUrl:        "https://github.com/eclipse-tractusx/app-dashboard",
+			Path:           "",
+			TargetRevision: "30a8d5a5e31091a0a450ecde84ac4b0bc3f57cef",
+		},
 	}
 
 	historyEntries := []app.History{
@@ -96,13 +116,71 @@ func TestShouldOrderBySyncHistoryId(t *testing.T) {
 		firstHistoryEntry,
 	}
 
-	expectedHtml := `<li>` + thirdHistoryEntry.DeployedAt + ` (34m0s)<br/>rev: ` + thirdHistoryEntry.Revision + `</li>`
-	expectedHtml += `<li>` + secondHistoryEntry.DeployedAt + ` (34m0s)<br/>rev: ` + secondHistoryEntry.Revision + `</li>`
-	expectedHtml += `<li>` + firstHistoryEntry.DeployedAt + ` (34m0s)<br/>rev: ` + firstHistoryEntry.Revision + `</li>`
+	expectedHtml := `<li>` + thirdHistoryEntry.DeployedAt + ` (34m0s)<br/>rev: <a href="https://github.com/eclipse-tractusx/app-dashboard/tree/` + thirdHistoryEntry.Source.TargetRevision + `">` + thirdHistoryEntry.Source.TargetRevision + `</a></li>`
+	expectedHtml += `<li>` + secondHistoryEntry.DeployedAt + ` (34m0s)<br/>rev: <a href="https://github.com/eclipse-tractusx/app-dashboard/tree/` + secondHistoryEntry.Source.TargetRevision + `">` + secondHistoryEntry.Source.TargetRevision + `</a></li>`
+	expectedHtml += `<li>` + firstHistoryEntry.DeployedAt + ` (34m0s)<br/>rev: <a href="https://github.com/eclipse-tractusx/app-dashboard/tree/` + firstHistoryEntry.Source.TargetRevision + `">` + firstHistoryEntry.Source.TargetRevision + `</a></li>`
 
 	renderedHtml := lastAppSyncToHtmlFunc()(historyEntries)
 
 	if renderedHtml != expectedHtml {
 		t.Errorf("Sync history not sorted! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)
+	}
+}
+
+func TestShouldCutOffGitExtensionsInRepoUrl(t *testing.T) {
+	// overwrite currentTime to make rendered HTML results assertable
+	currentTime = func() time.Time {
+		t, _ := time.Parse(time.RFC3339, "2022-09-18T08:00:00.20Z")
+		return t
+	}
+	historyEntry := app.History{
+		DeployStartedAt: "2022-09-18T07:25:40.20Z",
+		DeployedAt:      "2022-09-18T07:26:00.20Z",
+		Id:              1,
+		Revision:        "b8d56b2d875b183f3109f645443373e18f56783b",
+		Source: app.Source{
+			RepoUrl:        "https://github.com/eclipse-tractusx/app-dashboard.git",
+			TargetRevision: "3d7377d0af2683eb89f7c572d7f01fa794260e55",
+		},
+	}
+
+	historyEntries := []app.History{
+		historyEntry,
+	}
+	expectedHtml := `<li>` + historyEntry.DeployedAt + ` (34m0s)<br/>rev: <a href="https://github.com/eclipse-tractusx/app-dashboard/tree/3d7377d0af2683eb89f7c572d7f01fa794260e55">3d7377d0af2683eb89f7c572d7f01fa794260e55</a></li>`
+
+	renderedHtml := lastAppSyncToHtmlFunc()(historyEntries)
+
+	if renderedHtml != expectedHtml {
+		t.Errorf("Sync history Entry not rendered correctly! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)
+	}
+}
+
+func TestShouldRenderHttpUrlInsteadOfSshUrl(t *testing.T) {
+	// overwrite currentTime to make rendered HTML results assertable
+	currentTime = func() time.Time {
+		t, _ := time.Parse(time.RFC3339, "2022-09-18T08:00:00.20Z")
+		return t
+	}
+	historyEntry := app.History{
+		DeployStartedAt: "2022-09-18T07:25:40.20Z",
+		DeployedAt:      "2022-09-18T07:26:00.20Z",
+		Id:              1,
+		Revision:        "b8d56b2d875b183f3109f645443373e18f56783b",
+		Source: app.Source{
+			RepoUrl:        "git@github.com:eclipse-tractusx/app-dashboard",
+			TargetRevision: "3d7377d0af2683eb89f7c572d7f01fa794260e55",
+		},
+	}
+
+	historyEntries := []app.History{
+		historyEntry,
+	}
+	expectedHtml := `<li>` + historyEntry.DeployedAt + ` (34m0s)<br/>rev: <a href="https://github.com/eclipse-tractusx/app-dashboard/tree/3d7377d0af2683eb89f7c572d7f01fa794260e55">3d7377d0af2683eb89f7c572d7f01fa794260e55</a></li>`
+
+	renderedHtml := lastAppSyncToHtmlFunc()(historyEntries)
+
+	if renderedHtml != expectedHtml {
+		t.Errorf("Sync history Entry not rendered correctly! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)
 	}
 }
