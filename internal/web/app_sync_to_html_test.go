@@ -184,3 +184,32 @@ func TestShouldRenderHttpUrlInsteadOfSshUrl(t *testing.T) {
 		t.Errorf("Sync history Entry not rendered correctly! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)
 	}
 }
+
+func TestShouldNotRenderLinksForSyncsToCentralChartRepo(t *testing.T) {
+	// overwrite currentTime to make rendered HTML results assertable
+	currentTime = func() time.Time {
+		t, _ := time.Parse(time.RFC3339, "2022-09-18T08:00:00.20Z")
+		return t
+	}
+	historyEntry := app.History{
+		DeployStartedAt: "2022-09-18T07:25:40.20Z",
+		DeployedAt:      "2022-09-18T07:26:00.20Z",
+		Id:              1,
+		Revision:        "3.0.5",
+		Source: app.Source{
+			RepoUrl:        "https://eclipse-tractusx.github.io/charts/dev",
+			TargetRevision: "3.0.5",
+		},
+	}
+
+	historyEntries := []app.History{
+		historyEntry,
+	}
+	expectedHtml := `<li>` + historyEntry.DeployedAt + ` (34m0s)<br/>rev: 3.0.5</li>`
+
+	renderedHtml := lastAppSyncToHtmlFunc()(historyEntries)
+
+	if renderedHtml != expectedHtml {
+		t.Errorf("Sync history Entry not rendered correctly! \nexpected: %s \nGot: %s", expectedHtml, renderedHtml)
+	}
+}
