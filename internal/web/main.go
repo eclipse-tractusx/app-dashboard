@@ -20,7 +20,6 @@
 package web
 
 import (
-	"dashboard/internal/app"
 	"fmt"
 	"log"
 	"net/http"
@@ -29,6 +28,8 @@ import (
 	"strings"
 	"text/template"
 	"time"
+
+	"dashboard/internal/app"
 )
 
 type Webserver struct {
@@ -46,6 +47,7 @@ func NewWebserver() *Webserver {
 
 func (web *Webserver) Start(port int, syncResult *app.ApplicationsSyncResult) {
 	configureStaticContentServe()
+	configureHealthEndpoint()
 
 	web.configureRootHandler(createHtmlTemplate(), syncResult)
 
@@ -59,7 +61,7 @@ func (web *Webserver) configureRootHandler(template *template.Template, syncResu
 		if r.RequestURI != "/" && r.RequestURI != "/index" && r.RequestURI != "/index.html" {
 			w.WriteHeader(http.StatusNotFound)
 			w.Header().Set("Content-Type", "text/html")
-			w.Write(web.errorPage)
+			_, _ = w.Write(web.errorPage)
 
 			return
 		}
@@ -139,6 +141,13 @@ func configureStaticContentServe() {
 
 	http.Handle("/js/", maxAgeHandler(86400, http.StripPrefix("/js/",
 		http.FileServer(http.Dir("./web/js")))))
+}
+
+func configureHealthEndpoint() {
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache, no-store, no-transform, must-revalidate, private, max-age=0")
+		w.WriteHeader(http.StatusNoContent)
+	})
 }
 
 func maxAgeHandler(seconds int, h http.Handler) http.Handler {
