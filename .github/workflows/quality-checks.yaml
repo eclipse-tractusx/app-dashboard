@@ -28,7 +28,6 @@ on:
 jobs:
   check-quality:
     name: Check quality guidelines
-    runs-on: ubuntu-latest
-    steps:
-      - uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-quality-checks.yaml@main
+    uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-quality-checks.yaml@main
+    secrets: inherit
 
