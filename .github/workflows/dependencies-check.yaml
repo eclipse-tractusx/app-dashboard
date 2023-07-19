@@ -38,7 +38,7 @@ jobs:
 
       - name: Run dash
         id: run-dash
-        uses: eclipse-tractusx/sig-infra/.github/actions/run-dash@feature/add-dash-action
+        uses: eclipse-tractusx/sig-infra/.github/actions/run-dash@main
         with:
           dash_input: "go.sum"
 
