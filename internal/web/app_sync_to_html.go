@@ -23,6 +23,7 @@ import (
 	"dashboard/internal/app"
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -51,11 +52,25 @@ func lastAppSyncToHtmlFunc() func(history []app.History) string {
 				since = fmt.Sprintf("%v", duration)
 			}
 
-			result += "<li>" + entry.DeployedAt + " (" + since + ")<br/>rev: " + entry.Revision + "</li>"
+			result += "<li>" + entry.DeployedAt + " (" + since + ")<br/>rev: " + linkToRevision(entry.Source) + "</li>"
 		}
 
 		return result
 	}
+}
+
+func linkToRevision(source app.Source) string {
+	// Ignore deployments of released charts from central repo, since there are no tags present in this repo
+	// Information about the origin of the released chart (product repo) not available in current data structure
+	if strings.Contains(source.RepoUrl, "eclipse-tractusx.github.io/charts") {
+		return source.TargetRevision
+	}
+
+	return `<a href="` + ensureHttpGitHubUrl(source.RepoUrl) + `/tree/` + source.TargetRevision + `">` + source.TargetRevision + `</a>`
+}
+
+func ensureHttpGitHubUrl(url string) string {
+	return strings.TrimSuffix(strings.ReplaceAll(url, "git@github.com:", "https://github.com/"), ".git")
 }
 
 func getCurrentTime() time.Time {
