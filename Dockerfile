@@ -17,7 +17,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ###############################################################
 
-FROM golang:1.19.4-alpine AS builder
+FROM golang:1.21.3-alpine AS builder
 
 WORKDIR /app
 
@@ -30,7 +30,7 @@ RUN CGO_ENABLED=0 go test ./... && \
     go build -installsuffix 'static' -ldflags="-w -s" .
 
 
-FROM gcr.io/distroless/static:nonroot AS final
+FROM alpine:3.18.4 AS final
 
 WORKDIR /app
 

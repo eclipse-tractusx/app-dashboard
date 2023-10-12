@@ -1,3 +1,4 @@
+{{- /*
 ###############################################################
 # Copyright (c) 2023 Contributors to the Eclipse Foundation
 #
@@ -16,8 +17,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 ###############################################################
----
+*/}}
 
+{{- if .Values.ingress.enabled -}}
 {{- $fullName := include "app-dashboard.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 apiVersion: networking.k8s.io/v1
@@ -46,3 +48,4 @@ spec:
             name: {{ $fullName }}
             port:
               number: {{ $svcPort }}
+{{- end }}
