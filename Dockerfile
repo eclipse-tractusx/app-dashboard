@@ -37,6 +37,9 @@ WORKDIR /app
 COPY ./web /app/web
 COPY --from=builder --chown=nonroot:nonroot /app/dashboard /app/dashboard
 
+RUN adduser -u 1000 --disabled-password --gecos "" --no-create-home nonroot
+USER nonroot
+
 ENTRYPOINT ["/app/dashboard"]
 
 CMD ["-in-cluster=true"]
