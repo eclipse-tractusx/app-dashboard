@@ -52,8 +52,8 @@ func TestShouldRenderImagesWithNamespace(t *testing.T) {
 }
 
 func TestShouldRenderImageFromAnyContainerRegistry(t *testing.T) {
-	ghcrImage := "ghcr.io/catenax-ng/semantic-hub:0.1.0-M3"
-	expectedHtml := `<span class="host">ghcr.io</span>/<span class="image">catenax-ng/semantic-hub</span>:<span class="tag">0.1.0-M3</span>`
+	ghcrImage := "ghcr.io/eclipse-tractusx/semantic-hub:0.1.0-M3"
+	expectedHtml := `<span class="host">ghcr.io</span>/<span class="image">eclipse-tractusx/semantic-hub</span>:<span class="tag">0.1.0-M3</span>`
 
 	renderedHtml := containerImageToHtmlFunc()(ghcrImage)
 
