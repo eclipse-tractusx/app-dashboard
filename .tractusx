@@ -20,6 +20,7 @@
 
 product: "Eclipse Tractus-X App Dashboard"
 leadingRepository: "https://github.com/eclipse-tractusx/sig-infra"
+repoCategory: "supporting"
 repositories:
     - name: "Tractus-X quality checks"
       usage: "automated release guidelines checks"
