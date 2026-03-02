@@ -69,4 +69,12 @@ from the base distribution, along with any direct or indirect dependencies of th
 
 As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies
 with any relevant licenses for all software contained within.
+
+## Notice
+
+This work is licensed under the [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+- SPDX-License-Identifier: CC-BY-4.0
+- SPDX-File-CopyrightText: 2023 Contributors to the Eclipse Foundation
+- Source URL: https://github.com/eclipse-tractusx/app-dashboard
   
