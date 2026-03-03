@@ -21,5 +21,10 @@ This will deploy the component to your Kubernetes cluster.
 
 You can customize the configuration options amending `values.yaml` file and specifying your desired values.
 
-## License
-This project is licensed under the Apache License, Version 2.0. See the `LICENSE` file for more information.
+## NOTICE
+
+This work is licensed under the [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+- SPDX-License-Identifier: CC-BY-4.0
+- SPDX-FileCopyrightText: 2023 Contributors to the Eclipse Foundation
+- Source URL: https://github.com/eclipse-tractusx/app-dashboard
