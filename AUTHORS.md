@@ -6,7 +6,7 @@ The following people have contributed to this repository:
 
 Please add yourself to this list, if you contribute to the content.
 
-## Notice
+## NOTICE
 
 This work is licensed under the [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 

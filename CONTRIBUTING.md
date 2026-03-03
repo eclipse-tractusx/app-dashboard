@@ -74,7 +74,7 @@ Contact the project developers via the project's "dev" list.
 
 * https://accounts.eclipse.org/mailing-list/tractusx-dev
 
-## Notice
+## NOTICE
 
 This work is licensed under the [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
